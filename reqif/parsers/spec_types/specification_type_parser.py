@@ -68,8 +68,7 @@ class SpecificationTypeParser:
 
         # Some documents have a SPECIFICATION-TYPE without any SPEC-ATTRIBUTES.
         has_attributes = (
-            spec_type.spec_attributes is not None
-            and len(spec_type.spec_attributes) > 0
+            spec_type.spec_attributes is not None and len(spec_type.spec_attributes) > 0
         )
         if spec_type.is_self_closed and not has_attributes:
             output += "/>\n"
