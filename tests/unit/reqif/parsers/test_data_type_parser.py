@@ -65,3 +65,29 @@ def test_02_enumeration_type():
 
     assert value_1.key == "1"
     assert value_2.key == "2"
+
+
+def test_03_enumeration_value_without_properties():
+    spec_type_string = """
+<DATATYPE-DEFINITION-ENUMERATION
+  IDENTIFIER="NODE_TYPE"
+  LONG-NAME="T_Kind">
+  <SPECIFIED-VALUES>
+    <ENUM-VALUE
+      IDENTIFIER="NODE_TYPE_SECTION"
+      LONG-NAME="ordinary"
+    >
+    </ENUM-VALUE>
+  </SPECIFIED-VALUES>
+</DATATYPE-DEFINITION-ENUMERATION>
+    """
+    spec_type_xml = etree.fromstring(spec_type_string)
+
+    data_type = DataTypeParser.parse(spec_type_xml)
+    assert isinstance(data_type, ReqIFDataTypeDefinitionEnumeration)
+
+    value = data_type.values_map["NODE_TYPE_SECTION"]
+    assert value.key is None
+
+    unparsed = DataTypeParser.unparse(data_type)
+    assert "PROPERTIES" not in unparsed
