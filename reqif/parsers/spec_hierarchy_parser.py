@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from reqif.helpers.lxml import lxml_is_self_closed_tag
+from reqif.helpers.lxml import lxml_escape_for_html, lxml_is_self_closed_tag
 from reqif.models.reqif_spec_hierarchy import (
     ReqIFSpecHierarchy,
 )
@@ -16,6 +16,9 @@ class ReqIFSpecHierarchyParser:
             identifier = attributes["IDENTIFIER"]
         except Exception:
             raise NotImplementedError from None
+        description: Optional[str] = (
+            attributes["DESC"] if "DESC" in attributes else None
+        )
         last_change: Optional[str] = (
             attributes["LAST-CHANGE"] if "LAST-CHANGE" in attributes else None
         )
@@ -53,6 +56,7 @@ class ReqIFSpecHierarchyParser:
                 spec_hierarchy_children.append(child_spec_hierarchy)
         return ReqIFSpecHierarchy(
             identifier=identifier,
+            description=description,
             last_change=last_change,
             long_name=long_name,
             editable=editable,
@@ -69,9 +73,11 @@ class ReqIFSpecHierarchyParser:
     def unparse(hierarchy: ReqIFSpecHierarchy) -> str:
         base_level = hierarchy.calculate_base_level()
         base_level_str: str = " " * base_level
-        output: str = (
-            base_level_str + f'<SPEC-HIERARCHY IDENTIFIER="{hierarchy.identifier}"'
-        )
+        output: str = base_level_str + "<SPEC-HIERARCHY"
+        if hierarchy.description is not None:
+            escaped_description = lxml_escape_for_html(hierarchy.description)
+            output += f' DESC="{escaped_description}"'
+        output += f' IDENTIFIER="{hierarchy.identifier}"'
         if hierarchy.editable is not None:
             editable_value = "true" if hierarchy.editable else "false"
             output += f' IS-EDITABLE="{editable_value}"'
