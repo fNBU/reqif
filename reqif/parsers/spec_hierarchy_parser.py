@@ -4,6 +4,7 @@ from reqif.helpers.lxml import lxml_is_self_closed_tag
 from reqif.models.reqif_spec_hierarchy import (
     ReqIFSpecHierarchy,
 )
+from reqif.parsers.alternative_id_parser import AlternativeIDParser
 
 
 class ReqIFSpecHierarchyParser:
@@ -31,9 +32,13 @@ class ReqIFSpecHierarchyParser:
             is_table_internal_str = attributes["IS-TABLE-INTERNAL"]
             is_table_internal = is_table_internal_str == "true"
 
-        ref_then_children_order = list(
-            map(lambda el: el.tag, list(spec_hierarchy_xml))
-        ) == ["OBJECT", "CHILDREN"]
+        # Only the relative order of OBJECT and CHILDREN matters here. Comparing
+        # the whole child list would read any other child, such as the
+        # ALTERNATIVE-ID this commit starts preserving or a comment node, as "not
+        # the OBJECT-then-CHILDREN shape" and silently swap the two on write.
+        ref_then_children_order = [
+            el.tag for el in spec_hierarchy_xml if el.tag in ("OBJECT", "CHILDREN")
+        ] == ["OBJECT", "CHILDREN"]
 
         object_xml = spec_hierarchy_xml.find("OBJECT")
         spec_object_ref_xml = object_xml.find("SPEC-OBJECT-REF")
@@ -52,6 +57,7 @@ class ReqIFSpecHierarchyParser:
                 )
                 spec_hierarchy_children.append(child_spec_hierarchy)
         return ReqIFSpecHierarchy(
+            alternative_id=AlternativeIDParser.parse(spec_hierarchy_xml),
             identifier=identifier,
             last_change=last_change,
             long_name=long_name,
@@ -83,6 +89,10 @@ class ReqIFSpecHierarchyParser:
         if hierarchy.long_name:
             output += f' LONG-NAME="{hierarchy.long_name}"'
         output += ">\n"
+
+        output += AlternativeIDParser.unparse(
+            hierarchy.alternative_id, base_level_str + "  "
+        )
 
         def print_object() -> str:
             object_output = base_level_str + "  <OBJECT>\n"

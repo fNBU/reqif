@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from reqif.models.reqif_relation_group import ReqIFRelationGroup
+from reqif.parsers.alternative_id_parser import AlternativeIDParser
 
 
 class ReqIFRelationGroupParser:
@@ -58,6 +59,7 @@ class ReqIFRelationGroupParser:
                 target_specification_ref = xml_type_ref.text
 
         return ReqIFRelationGroup(
+            alternative_id=AlternativeIDParser.parse(xml_relation_group),
             identifier=identifier,
             description=description,
             last_change=last_change,
@@ -84,6 +86,10 @@ class ReqIFRelationGroupParser:
         if relation_group.long_name:
             output += f' LONG-NAME="{relation_group.long_name}"'
         output += ">\n"
+
+        output += AlternativeIDParser.unparse(
+            relation_group.alternative_id, "          "
+        )
 
         if relation_group.spec_relations is not None:
             output += "          <SPEC-RELATIONS>\n"
