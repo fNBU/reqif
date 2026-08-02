@@ -7,6 +7,7 @@ from reqif.models.reqif_spec_relation import (
     ReqIFSpecRelation,
 )
 from reqif.models.reqif_types import SpecObjectAttributeType
+from reqif.parsers.alternative_id_parser import AlternativeIDParser
 from reqif.parsers.attribute_value_parser import AttributeValueParser
 
 
@@ -85,6 +86,7 @@ class SpecRelationParser:
                 break
 
         spec_relation = ReqIFSpecRelation(
+            alternative_id=AlternativeIDParser.parse(xml_spec_relation),
             xml_node=xml_spec_relation,
             description=description,
             identifier=identifier,
@@ -113,9 +115,13 @@ class SpecRelationParser:
         if spec_relation.xml_node is not None:
             children_tags = list(map(lambda el: el.tag, list(spec_relation.xml_node)))
         else:
-            children_tags = ["TYPE", "SOURCE", "TARGET", "VALUES"]
+            children_tags = ["ALTERNATIVE-ID", "TYPE", "SOURCE", "TARGET", "VALUES"]
         for tag in children_tags:
-            if tag == "TYPE":
+            if tag == "ALTERNATIVE-ID":
+                output += AlternativeIDParser.unparse(
+                    spec_relation.alternative_id, "          "
+                )
+            elif tag == "TYPE":
                 output += SpecRelationParser._unparse_spec_relation_type(spec_relation)
             elif tag == "SOURCE":
                 output += SpecRelationParser._unparse_spec_relation_source(

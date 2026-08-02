@@ -17,8 +17,10 @@ class ReqIFSpecRelation:  # pylint: disable=too-many-instance-attributes
         last_change: Optional[str] = None,
         long_name: Optional[str] = None,
         values_attribute: Optional[SpecObjectAttribute] = None,
+        alternative_id: Optional[str] = None,
     ):
         self.identifier: str = identifier
+        self.alternative_id: Optional[str] = alternative_id
         self.relation_type_ref: str = relation_type_ref
         self.source: str = source
         self.target: str = target

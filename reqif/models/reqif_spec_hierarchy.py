@@ -20,11 +20,13 @@ class ReqIFSpecHierarchy:  # pylint: disable=too-many-instance-attributes
         is_table_internal: Optional[bool] = False,
         is_self_closed: bool = True,
         xml_node: Optional[Any] = None,
+        alternative_id: Optional[str] = None,
     ):
         assert level >= 0
 
         # Mandatory fields.
         self.identifier: str = identifier
+        self.alternative_id: Optional[str] = alternative_id
         self.spec_object: str = spec_object
         # Not part of ReqIF, but helpful to calculate the section depth levels.
         self.level = level

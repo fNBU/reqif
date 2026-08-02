@@ -13,8 +13,10 @@ class ReqIFRelationGroup:  # pylint: disable=too-many-instance-attributes
         target_specification_ref: Optional[str] = None,
         spec_relations: Optional[List[str]] = None,
         is_self_closed: bool = True,
+        alternative_id: Optional[str] = None,
     ):
         self.identifier: str = identifier
+        self.alternative_id: Optional[str] = alternative_id
         self.description: Optional[str] = description
         self.last_change: Optional[str] = last_change
         self.long_name: Optional[str] = long_name
