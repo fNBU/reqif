@@ -12,6 +12,7 @@ class ReqIFSpecHierarchy:  # pylint: disable=too-many-instance-attributes
         spec_object: str,
         level: int,
         children: Optional[List["ReqIFSpecHierarchy"]] = None,
+        description: Optional[str] = None,
         long_name: Optional[str] = None,
         ref_then_children_order: bool = True,
         last_change: Optional[str] = None,
@@ -30,6 +31,7 @@ class ReqIFSpecHierarchy:  # pylint: disable=too-many-instance-attributes
 
         # Optional fields
         self.children: Optional[List[ReqIFSpecHierarchy]] = children
+        self.description: Optional[str] = description
         self.long_name: Optional[str] = long_name
         # Not part of REqIF, but helpful for printing the
         # <OBJECT> and <CHILDREN> tags depending on which tool produced the
