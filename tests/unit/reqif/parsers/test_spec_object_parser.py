@@ -56,6 +56,34 @@ def test_03_missing_values_element():
     assert spec_object.attributes == []
 
 
+def test_04_enumeration_attribute_missing_values_element():
+    """An ATTRIBUTE-VALUE-ENUMERATION may omit its <VALUES> child.
+
+    Some ALM tools export an unset enumeration attribute without a <VALUES>
+    element (rather than an empty <VALUES/>). Parsing must treat it as an
+    empty value list instead of raising.
+    """
+    spec_object_string = """
+<SPEC-OBJECT IDENTIFIER="TEST_ENUM_NO_VALUES_ID" LAST-CHANGE="2021-10-15T11:32:40.205+02:00">
+  <VALUES>
+    <ATTRIBUTE-VALUE-ENUMERATION>
+      <DEFINITION>
+        <ATTRIBUTE-DEFINITION-ENUMERATION-REF>TEST_FIELD_STATUS</ATTRIBUTE-DEFINITION-ENUMERATION-REF>
+      </DEFINITION>
+    </ATTRIBUTE-VALUE-ENUMERATION>
+  </VALUES>
+  <TYPE>
+    <SPEC-OBJECT-TYPE-REF>TEST_SPEC_OBJECT_TYPE</SPEC-OBJECT-TYPE-REF>
+  </TYPE>
+</SPEC-OBJECT>
+    """  # noqa: E501
+
+    spec_object_xml = etree.fromstring(spec_object_string)
+    spec_object = SpecObjectParser.parse(spec_object_xml)
+    assert spec_object.identifier == "TEST_ENUM_NO_VALUES_ID"
+    assert spec_object.attribute_map["TEST_FIELD_STATUS"].value == []
+
+
 def test_02_attributes_xhtml():
     spec_object_string = """\
 <SPEC-OBJECT xmlns:reqif-xhtml="http://www.w3.org/1999/xhtml" IDENTIFIER="TEST_SPEC_OBJECT_ID" LAST-CHANGE="2021-10-15T11:32:40.205+02:00">
